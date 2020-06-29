@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage'
 export const api = {
-  api: `http://192.168.1.4/api-karyawan/client`,
-  img: `http://192.168.1.4/api-karyawan/public/img`,
+  api: `http://localhost/api-karyawan/client`,
+  img: `http://localhost/api-karyawan/public/img`,
   headers:{Authorization:'Bearer token', Accept: 'application/json'}
 }
 
