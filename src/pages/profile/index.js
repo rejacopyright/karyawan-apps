@@ -4,6 +4,10 @@ import { Button, Divider, Icon, Image, Avatar } from 'react-native-elements'
 import { Grid, Row, Col } from "react-native-easy-grid"
 import St from '../../assets/styles/index'
 
+// API
+import axios from 'axios';
+import con, {api} from '../../api/api';
+
 class SearchBar extends Component {
   render() {
     return (
@@ -19,17 +23,24 @@ class SearchBar extends Component {
     );
   }
 }
-export default class Profile extends Component {
+class Profile extends Component {
   state = {
     loading: true,
-    refresh: false
+    refresh: false,
+    user:{},
+    avatar:null
   }
-  componentDidMount() {
-    this.setState({ loading:false });
+  componentDidMount(){
+    con.then(r => {
+      axios.get(r.api+'/me', {headers:r.headers}).then(res => {
+        console.log(res.data);
+        const avatar = r.img+'/user/thumb/'+res.data.user.img[0].name;
+        this.setState({user:res.data.user, loading: false, refresh: false, avatar});
+      });
+    });
   }
   onRefresh(){
-    this.setState({ refresh:true });
-    new Promise(resolve => setTimeout(resolve, 2000)).then(() => this.setState({ refresh:false }));
+    this.setState({ refresh:true, user:{}, avatar:null }, this.componentDidMount);
   }
   loadMore(e){
     const offset = e.nativeEvent.contentOffset.y;
@@ -46,7 +57,7 @@ export default class Profile extends Component {
         <Grid>
           <Row style={[St.center]}>
             <Col>
-              <ActivityIndicator size={50} color="#eee" animating={true} />
+              <ActivityIndicator size={50} color="#ddd" animating={true} />
             </Col>
           </Row>
         </Grid>
@@ -65,7 +76,7 @@ export default class Profile extends Component {
             {/* Image */}
             <View style={[St.row, St.center, St.px2, St.pb1, St.pt2]}>
               <Col>
-                <Avatar rounded resizeMode="contain" source={{ uri: 'https://i.pravatar.cc/300' }} size={75} renderPlaceholderContent={<ActivityIndicator color="#ddd" size={15} />} placeholderStyle={[St.bgLightGrey]} />
+                <Avatar rounded resizeMode="contain" source={{ uri: this.state.avatar }} size={75} renderPlaceholderContent={<ActivityIndicator color="#ddd" size={15} />} placeholderStyle={[St.bgLightGrey]} />
               </Col>
               <Col size={2}>
                 <Row style={[St.center]}>
@@ -87,11 +98,10 @@ export default class Profile extends Component {
             {/* Biodata */}
             <View style={[St.row, St.px1, St.pb1]}>
               <Col style={[St.left]}>
-                <Text style={[St.f16, St.fw700]}>Reja Jamil</Text>
-                <Text style={[St.f14, St.fw100, St.fMuted]}>rejajamil</Text>
-                <Text style={[St.f14, St.fw100]}>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam, quisquam? </Text>
-                <Text style={[St.f13, St.fw100, St.fPrimary]}>Jl. Selat Makasar G2 No. 8, RT 03 RW 17, KAV TNI AL. KOTA JAKARTA TIMUR - DUREN SAWIT </Text>
-                <Text style={[St.f13, St.fw100, St.fPrimary]}>DKI JAKARTA 13440 </Text>
+                <Text style={[St.f16, St.fw700]}>{this.state.user.name}</Text>
+                <Text style={[St.f14, St.fw100, St.fMuted]}>{this.state.user.username}</Text>
+                {/* <Text style={[St.f14, St.fw100]}>{this.state.user.alamat} </Text> */}
+                <Text style={[St.f13, St.fw100, St.fPrimary]}>{this.state.user.alamat} </Text>
               </Col>
             </View>
             {/* Button Action */}
@@ -123,17 +133,21 @@ export default class Profile extends Component {
             </View>
             {/* Story */}
             <View style={[St.row, St.px1, St.py1]}>
-              <Col style={[St.center, St.same60]}>
-                <View style={[St.same50, St.rounded, St.center, St.border1, St.borderMuted]}>
+              <Col style={[St.center, St.same50]}>
+                <View style={[St.same50, St.rounded, St.center, St.border1, St.borderGray]}>
                   <Icon type='ionicon' name="ios-add" size={30} color="#aaa" solid />
                 </View>
               </Col>
-              <Col style={[St.center, St.same60, St.border1, St.borderGray, St.rounded, St.ml1]}>
-                <Avatar rounded size={50} resizeMode="contain" source={{ uri: 'https://i.pravatar.cc/100?img=1' }} renderPlaceholderContent={<ActivityIndicator color="#ddd" size={15} />} placeholderStyle={[St.bgLightGrey]} />
-              </Col>
-              <Col style={[St.center, St.same60, St.border1, St.borderGray, St.rounded, St.ml1]}>
+              {
+                (Object.values(this.state.user).length ? this.state.user.img.splice(0,2) : [1,2,3]).map((r, key) => (
+                  <Col style={[St.center, St.same50, St.border1, St.borderGray, St.rounded, St.ml1]} key={key}>
+                    <Avatar rounded size={50} resizeMode="contain" source={{ uri: `${api.img}/user/thumb/${r.name}` }} renderPlaceholderContent={<ActivityIndicator color="#ddd" size={15} />} placeholderStyle={[St.bgLightGrey]} />
+                  </Col>
+                ))
+              }
+              {/* <Col style={[St.center, St.same50, St.border1, St.borderGray, St.rounded, St.ml1]}>
                 <Avatar rounded size={50} resizeMode="contain" source={{ uri: 'https://i.pravatar.cc/100?img=2' }} renderPlaceholderContent={<ActivityIndicator color="#ddd" size={15} />} placeholderStyle={[St.bgLightGrey]} />
-              </Col>
+              </Col> */}
             </View>
             {/* View Style */}
             <View style={[St.row]}>
@@ -147,9 +161,9 @@ export default class Profile extends Component {
             {/* Gallery */}
             <Row style={[St.wrap, St.pb1]}>
               {
-                [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20].map(key => (
-                  <Col key={key} style={[{ width: '33.33333%', marginTop: 1 }]}>
-                    <Image progressiveRenderingEnabled source={{ uri: `https://i.pravatar.cc/200?img=${key}` }} style={{ width: 119, height: 119 }} PlaceholderContent={<ActivityIndicator color="#ddd" size={15} />} placeholderStyle={[St.bgLightGrey]} />
+                (Object.values(this.state.user).length ? this.state.user.img : [1,2,3]).map((r, key) => (
+                  <Col key={key} style={[St.m0, { width: '33.33333%', marginTop: 1 }]} onPress={() => alert('Hello World')}>
+                    <Image resizeMode='cover' progressiveRenderingEnabled source={{ uri: `${api.img}/user/thumb/${r.name}` }} style={{ width: 120, height: 120 }} PlaceholderContent={<ActivityIndicator color="#ddd" size={15} />} placeholderStyle={[St.bgLightGrey]} />
                   </Col>
                 ))
               }
@@ -160,3 +174,5 @@ export default class Profile extends Component {
     );
   }
 }
+
+export default Profile

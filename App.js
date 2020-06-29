@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { Row, Col } from 'react-native-easy-grid'
 import { NativeRouter, Switch, Route, Link } from "react-router-native"
 import { Text, Image, TextInput, StatusBar } from 'react-native'
@@ -19,20 +19,19 @@ class Footer extends Component {
       { name: 'Home', icon: require('./src/icons/active/home.png'), uri: 'home' },
       { name: 'Orders', icon: require('./src/icons/active/briefcase.png'), uri: 'orders' },
       { name: 'Absen', icon: require('./src/icons/active/finger.png'), uri: 'absen' },
-      { name: 'Inbox', icon: require('./src/icons/active/folder.png'), uri: 'inbox' },
+      { name: 'Inbox', icon: require('./src/icons/active/folder-1.png'), uri: 'inbox' },
       { name: 'Profile', icon: require('./src/icons/active/user.png'), uri: 'profile' }
     ]
     return (
       <Row style={[St.shadowTop, { height: 60, backgroundColor: '#fff' }]}>
-        <StatusBar hidden={false} barStyle="dark-content" backgroundColor="#f5f5f5" />
         {
           menu.map((r, key) => (
             <Col key={key} style={[St.center]}>
               <Link to={r.uri} underlayColor="rgba(0,0,0¸0)" style={[St.center]}>
-                <>
+                <Fragment>
                   <Image source={r.icon} style={{ resizeMode: "contain", width: 30, height: 30 }}></Image>
                   <Text style={[St.textCenter, St.f10]}>{r.name}</Text>
-                </>
+                </Fragment>
               </Link>
             </Col>
           ))
@@ -55,7 +54,6 @@ class App extends Component {
     });
   }
   componentDidUpdate(prev){
-    console.log(this.props.auth !== prev.auth);
     AsyncStorage.getItem('auth').then(r => {
       if (this.props.auth !== prev.auth && r && this._isMounted) {
         this.setState({auth:r, loading: false});
@@ -81,6 +79,7 @@ class App extends Component {
     }
     return (
       <NativeRouter>
+        <StatusBar hidden={false} barStyle="dark-content" backgroundColor="#f5f5f5" />
         <Col>
           <Switch>
             <Route exact path="/" component={Home} />

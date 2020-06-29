@@ -2,7 +2,7 @@ import React, {Component, Fragment} from 'react'
 // NETWORK
 import { connect } from 'react-redux'
 import axios from 'axios';
-import con from '../../api/api';
+import con, {api} from '../../api/api';
 // EL
 import { Text, StatusBar, Image, TextInput, Keyboard } from 'react-native'
 import { Button, Divider, Icon } from 'react-native-elements'
@@ -10,10 +10,14 @@ import { Row, Col } from 'react-native-easy-grid'
 // STYLE
 import St from '../../assets/styles/index'
 import Co from '../../assets/styles/colors'
+import Spinner from 'react-native-loading-spinner-overlay'
 
 class Login extends Component {
   state = {
     loading:false
+  }
+  componentDidMount(){
+    console.log({a:123, b:456});
   }
   // onChangeText(name, e){
   //   this.setState({[name]:e});
@@ -24,7 +28,7 @@ class Login extends Component {
     const q = {};
     q['username'] = this.props.username;
     q['password'] = this.props.password;
-    axios.post(con.api + '/admin/login',q).then(res => {
+    axios.post(api.api + '/login',q).then(res => {
       if (res.data.id) {
         this.props.handleLogin(res.data);
       }else {
@@ -39,6 +43,13 @@ class Login extends Component {
   render(){
     return(
       <Fragment>
+        <Spinner
+          visible={this.state.loading}
+          color="#333"
+          overlayColor="rgba(255, 255, 255, 0.95)"
+          textContent={'Loading...'}
+          textStyle={{color:'#333', fontSize:14}}
+        />
         <Row size={5} style={[St.center, St.bgWhite]}>
           <Text style={[St.fMuted, St.f12, St.mr1]}>Bahasa Indonesia</Text>
           <Icon type='feather' name="chevron-down" size={12} color="#555" />
@@ -46,23 +57,23 @@ class Login extends Component {
         <Row size={90} style={[St.center, St.bgWhite]}>
           <StatusBar barStyle="dark-content" backgroundColor="#f5f5f5" />
           <Col style={[St.px4]}>
-            <Row style={[St.center, St.px5, {height:80, opacity:.9}]}>
-              <Image source={require('../../icons/brands/instagram.png')} resizeMode='contain' style={{width:'100%'}} />
+            <Row style={[St.center, St.px5, St.mb2, {height:80, opacity:.9}]}>
+              <Image source={require('../../icons/brands/instagram.png')} resizeMode='contain' style={{width:'100%', height: 80}} />
             </Row>
             <Row style={[St.center, St.bgLightGrey, St.px1, St.border1, St.borderGray, St.radius1, St.mb1, {height:40}]}>
               <Col>
-                <Image source={require('../../icons/active/user.png')} style={[{ width: 20, height: 20 }]} />
+                <Image source={require('../../icons/inactive/user.png')} style={[{ width: 15, height: 15 }]} />
               </Col>
               <Col size={10}>
-                <TextInput placeholder='Username atau email' autoCompleteType="off" autoCapitalize="none" onChangeText={e => this.props.handleUsername(e)} onSubmitEditing={this.onSubmitEditing.bind(this)} style={[St.px1, St.f13]} />
+                <TextInput placeholder='Username atau email' autoCompleteType="off" autoCapitalize="none" onChangeText={e => this.props.handleUsername(e)} onSubmitEditing={this.onSubmitEditing.bind(this)} style={[St.f13]} />
               </Col>
             </Row>
             <Row style={[St.center, St.bgLightGrey, St.px1, St.border1, St.borderGray, St.radius1, St.mb1, {height:40}]}>
               <Col>
-                <Image source={require('../../icons/active/lock.png')} style={[{ width: 20, height: 20 }]} />
+                <Image source={require('../../icons/inactive/lock.png')} style={[{ width: 15, height: 15 }]} />
               </Col>
               <Col size={10}>
-                <TextInput secureTextEntry placeholder='Password' autoCompleteType="off" autoCapitalize="none" onChangeText={e => this.props.handlePassword(e)} onSubmitEditing={this.onSubmitEditing.bind(this)} style={[St.px1, St.f13]} />
+                <TextInput secureTextEntry placeholder='Password' autoCompleteType="off" autoCapitalize="none" onChangeText={e => this.props.handlePassword(e)} onSubmitEditing={this.onSubmitEditing.bind(this)} style={[St.f13]} />
               </Col>
             </Row>
             <Button  title="Log in" buttonStyle={[St.radius1]} titleStyle={[St.f13]} onPress={this.onSubmitEditing.bind(this)} />

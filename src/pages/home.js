@@ -1,9 +1,12 @@
 import React, { Component, Fragment } from 'react'
 import { ScrollView, View, Text, TextInput, StyleSheet, Image, TouchableOpacity} from 'react-native'
-import { Avatar } from 'react-native-elements'
+import { Avatar, Image as Img } from 'react-native-elements'
 import { Row, Col } from 'react-native-easy-grid'
 import { connect } from 'react-redux'
 import St from '../assets/styles/index'
+
+import axios from 'axios';
+import con from '../api/api';
 
 const styles = StyleSheet.create({
   shadowTop: {
@@ -28,13 +31,20 @@ class SearchBar extends Component {
           <TextInput placeholder='Search here...' style={{ flex: 1, borderWidth: 1, borderColor: '#eee', borderRadius: 50, fontSize: 16, paddingLeft: 50, paddingRight: 20 }} />
         </View>
         <View style={{ width: 50 }}>
-          <Image source={require('../icons/active/layers.png')} style={{ width: 25, height: 25, position: 'absolute', top: '25%', left: 15 }} />
+          <Image source={require('../icons/active/bell.png')} style={{ width: 25, height: 25, position: 'absolute', top: '25%', left: 15 }} />
         </View>
       </View>
     );
   }
 }
 class Home extends Component {
+  componentDidMount(){
+    // con.then(u => {
+    //   axios.get(u.api+'/me', {headers:u.headers}).then(r => {
+    //     console.log(r.data.user);
+    //   });
+    // });
+  }
   onMomentumScrollEnd(e){
     const offset = e.nativeEvent.contentOffset.y;
     const height = e.nativeEvent.contentSize.height - e.nativeEvent.layoutMeasurement.height;
@@ -55,14 +65,14 @@ class Home extends Component {
   }
   render() {
     const menu = [
-      { name: 'reg', title: 'Daftar', icon: require('../icons/menu/add-2.png') },
-      { name: 'post', title: 'Postingan', icon: require('../icons/menu/layers.png') },
-      { name: 'user', title: 'Karyawan', icon: require('../icons/menu/user-4.png') },
-      { name: 'absen', title: 'Absensi', icon: require('../icons/menu/success.png') },
-      { name: 'history', title: 'History', icon: require('../icons/menu/clock-1.png') },
-      { name: 'calendar', title: 'Kalender', icon: require('../icons/menu/calendar-3.png') },
-      { name: 'file', title: 'File Saya', icon: require('../icons/menu/folder-11.png') },
-      { name: 'logout', title: 'Keluar', icon: require('../icons/menu/error.png') },
+      { name: 'history', title: 'Riwayat', icon: require('../icons/active/clock.png') },
+      { name: 'post', title: 'Postingan', icon: require('../icons/active/search.png') },
+      { name: 'user', title: 'Karyawan', icon: require('../icons/active/user.png') },
+      { name: 'absen', title: 'Absensi', icon: require('../icons/active/finger.png') },
+      { name: 'test', title: 'Test', icon: require('../icons/active/id-card-1.png') },
+      { name: 'calendar', title: 'Kalender', icon: require('../icons/active/calendar-dot.png') },
+      { name: 'file', title: 'File Saya', icon: require('../icons/active/folder-4.png') },
+      { name: 'logout', title: 'Keluar', icon: require('../icons/active/close.png') },
     ]
     return (
       <View style={{ flex: 1, backgroundColor: '#fff', paddingHorizontal: 15, paddingVertical: 10 }}>
@@ -79,8 +89,8 @@ class Home extends Component {
             {
               menu.map((r, key) => (
                 <TouchableOpacity key={key} onPress={this.klikMenu.bind(this, r.name)} style={[St.m0, { width: '25%', alignItems: 'center', justifyContent: 'flex-start', marginBottom: 20 }]}>
-                  <View style={[St.bgSoftSuccess, St.rounded, {padding: 15}]}>
-                    <Avatar rounded source={r.icon} size={25} />
+                  <View style={[St.bgSoftSuccess, St.rounded, {padding: 10}]}>
+                    <Image source={r.icon} style={[St.same25]} />
                   </View>
                   <Text style={[St.f10, {marginTop: 5}]} numberOfLines={1}>{r.title}</Text>
                 </TouchableOpacity>
